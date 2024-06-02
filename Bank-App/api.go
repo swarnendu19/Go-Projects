@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -18,7 +19,7 @@ type ApiError struct {
 
 func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	w.WriteHeader(status)
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(v)
 }
 
@@ -43,16 +44,31 @@ func (s *APIServer) Run() {
 	//Make routers of the Handlers
 	router := mux.NewRouter()
 	router.HandleFunc("/account", makeHTTPFunc(s.handleAccount))
-	log.Println("JSON API server is running on PORT:", s.listenAdderss)an
-	http.ListenAndServe(s.listenAdderss, router)
+	log.Println("JSON API server is running on PORT:", s.listenAdderss)
+
+	err := http.ListenAndServe(s.listenAdderss, router)
+	if err != nil {
+		log.Fatalf("Cound not Start server: %s\n", err.Error())
+	}
 }
 
 func (s *APIServer) handleAccount(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	if r.Method == "GET" {
+		return s.handleGetAccount(w, r)
+	}
+	if r.Method == "POST" {
+		return s.handleCreateAccount(w, r)
+	}
+	if r.Method == "DELETE" {
+		return s.handleDeleteAccount(w, r)
+	}
+	return fmt.Errorf("Method not valid", r.Method)
 }
 
 func (s *APIServer) handleGetAccount(w http.ResponseWriter, r *http.Request) error {
-	return nil
+	vars := mux.Vars(r)["id"]
+	fmt.Println("Rotes", vars)
+	return WriteJSON(w, http.StatusOK, &Account{})
 }
 
 func (s *APIServer) handleCreateAccount(w http.ResponseWriter, r *http.Request) error {
