@@ -11,7 +11,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	server := NewAPIServer(":8000")
+	server := NewAPIServer(":8000", store)
 	fmt.Println("Server running on 8000", server)
 	server.Run()
 }

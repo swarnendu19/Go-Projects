@@ -11,6 +11,7 @@ import (
 
 type APIServer struct {
 	listenAdderss string
+	store         Storage
 }
 
 type ApiError struct {
@@ -34,9 +35,10 @@ func makeHTTPFunc(f apiFunc) http.HandlerFunc {
 	}
 }
 
-func NewAPIServer(listenAdderess string) *APIServer {
+func NewAPIServer(listenAdderess string, store Storage) *APIServer {
 	return &APIServer{
 		listenAdderss: listenAdderess,
+		store:         store,
 	}
 }
 
